@@ -1,0 +1,99 @@
+---
+openapi: 3.0.0
+info:
+  title: iu9gen - web report generator at BMSTU.
+  description: |
+    Can be used to generate laboratory works reports at BMSTU ICS9.
+  version: 0.0.0
+servers:
+  - url: https://iu9gen.starovoytovai.ru/
+    description: Main (production) server
+  - url: http://localhost:8080/
+    description: Local server for testing
+
+paths:
+  /ping:
+    get:
+      summary: Healthcheck
+      operationId: ping
+      tags:
+        - api
+      responses:
+        '200':
+          description: OK
+  /generateReport:
+    post:
+      summary: Generate report in pdf format.
+      description: |
+        Returns link to created file.
+      operationId: generateReport
+      tags:
+        - api
+      requestBody:
+        required: true
+        content:
+          application/json:
+            description: Data used to generate report.
+            schema:
+              $ref: '#/components/schemas/ReportData'
+      responses:
+        '201':
+          description: OK
+          content:
+            application/pdf:
+              type: pdf
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+components:
+  responses:
+    ErrorResponse:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+  schemas:
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+        title:
+          type: string
+        detail:
+          type: string
+      required:
+        - status
+        - title
+    ReportData:
+      type: object
+      properties:
+        workType:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        teacher:
+          type: string
+        group:
+          type: string
+        course:
+          type: integer
+        labNumber:
+          type: string
+        body:
+          type: string
+        static:
+          type: object
+      required:
+        - workType
+        - title
+        - author
+        - teacher
+        - group
+        - course
+        - labNumber
+        - body
